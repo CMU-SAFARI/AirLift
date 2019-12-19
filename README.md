@@ -1,6 +1,6 @@
 # AirLift
 
-This repository contains the source code for our tool AirLift, which we describe and evaluate in our RECOMB'20 submission (under review). 
+This repository contains the source code for our tool AirLift, which we describe and evaluate in our RECOMB'20 submission (under review) and the ArXiv version (http://arxiv.org/abs/1912.08735). 
 
 >J.S. Kim, C. Firtina, D. Senol Cali, M. Alser, N. Hajinazar, C. Alkan, O. Mutlu. "AirLift: A Fast and Comprehensive Technique for Translating Alignments between Reference Genomes."
 
