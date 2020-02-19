@@ -16,7 +16,9 @@ We build AirLift on top of the following tools. Please make sure they are instal
 
 ## To run AirLift, please issue the following command:
         
+        ```
       	$ ./run_pipeline.sh [SRCFOLDER] [OLDREF] [NEWREF] [SEQ_FILE_EXT] [READSIZE] [READ_BAM] [FIRST_PAIR] [SECOND_PAIR] [OUTPUT] [THREAD] 
+        
 
 * `SRCFOLDER` - The root directory containing all the folders of different steps in AirLift. 
 * `OLDREF` - The folder containing the old reference file.
