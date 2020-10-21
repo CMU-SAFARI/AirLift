@@ -32,10 +32,11 @@ num_chains = 0
 
 if not len(sys.argv) == 5: 
     print("Not enough arguments.") 
-    print("Usage: python analyze_liftover.py <chain_file> <reference genome FASTA file> <anticipated read size> <output FASTA FILE of gaps>") 
+    print("Usage: python extract_gaps.py <chain_file> <reference genome FASTA file> <anticipated read size> <output FASTA FILE of gaps>") 
     exit() 
 
 if not os.path.isfile(sys.argv[1]): 
+    print("Not a File: ", sys.argv[1]) 
     exit()
 
 fn_chain = sys.argv[1] 

@@ -1,8 +1,13 @@
-# python gaps_to_fasta.py <extracted gaps from references> <anticipated read size> <output fasta filename> 
+# python gaps_to_fasta.py <extracted gaps from references> <anticipated read size> <output fasta filename> <skip_length> 
 
 import sys
 import os.path 
  
+if not len(sys.argv) == 5: 
+    print("Not enough arguments.") 
+    print("Usage: python gaps_to_fasta.py <extracted gaps from references> <anticipated read size> <output fasta filename> <skip_length>") 
+    exit() 
+
 in_fn = sys.argv[1] 
 read_size = int(sys.argv[2]) 
 out_fn = sys.argv[3] 
@@ -32,6 +37,7 @@ for line in open(in_fn):
             for i in range(read_size, len(seq), skip_len): 
                 outfile.write(">" + seq_name.strip() + "_" + str(seq_num) + "\n") # sequence name 
                 outfile.write(seq[seq_num:i] + "\n") # actual sequence 
+                print(seq[seq_num:i] + "\n") 
                 seq_num = seq_num + skip_len 
         seq_name = line.split(">")[1] 
         seq_num = 0 
@@ -39,3 +45,13 @@ for line in open(in_fn):
     else: 
         seq = seq + line.strip()
         
+
+if len(seq) > 0: # if we have a sequence, add the seqs to our fasta file. 
+    for i in range(read_size, len(seq), skip_len): 
+        outfile.write(">" + seq_name.strip() + "_" + str(seq_num) + "\n") # sequence name 
+        outfile.write(seq[seq_num:i] + "\n") # actual sequence 
+        print(seq[seq_num:i] + "\n") 
+        seq_num = seq_num + skip_len 
+seq_name = line.split(">")[1] 
+seq_num = 0 
+seq = "" 
