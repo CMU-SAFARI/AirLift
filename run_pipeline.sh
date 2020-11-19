@@ -294,6 +294,12 @@ function main(){
     fi
 }
 
+
+if [[ "${#BASH_SOURCE[@]}" -eq 1 ]]
+then
+    main "$@"
+fi
+
 #constant regions:
 #for i in `echo ${OUTPUT}/*.chain`; do local chr=`basename $i | sed s/.chain//`; /usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/constant_bed/constant_regions.bed.time" python3 "${SRCFOLDER}/4-extract_reads/get_constant_regions.py" ${READSIZE} $i "${OUTPUT}/bedfiles/${chr}/constant_bed/constant_regions.bed"; done
 #sbatch --local wrap="for i in `echo ${OUTPUT}/*.chain`; do local chr=`basename $i | sed s/.chain//`; /usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/constant_bed/constant_reads.bed.time" bash "${SRCFOLDER}/4-extract_reads/extract_reads_noprune.sh" ${READ_BAM} "${OUTPUT}/bedfiles/${chr}/constant_bed/constant_regions.bed" > "${OUTPUT}/bedfiles/${chr}/constant_bed/constant_reads.bed"; done"
