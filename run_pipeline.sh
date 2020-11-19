@@ -13,7 +13,6 @@ SECOND_PAIR=$8
 OUTPUT=$9
 THREAD=${10}
 
-mkdir -p "${OUTPUT}/"
 
 function generate_chain(){
     bash "${SRCFOLDER}/1-generate_chain/chain_install.sh" "${OUTPUT}/"
@@ -275,6 +274,8 @@ function extract_reads_with_parallel(){
 
 
 function main(){
+    mkdir -p "${OUTPUT}/"
+
     local chain_existed=$(ls ${OUTPUT}/*.chain 2> /dev/null)
     
     if [[ ${#chain_existed} -gt 0 ]]; then
