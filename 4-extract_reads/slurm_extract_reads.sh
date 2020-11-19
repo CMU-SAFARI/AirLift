@@ -18,6 +18,11 @@ FILES=({BED_FILES_FOLDER}/*.bed)
 BED_FILE=${FILES[${SLURM_ARRAY_TASK_ID}]}
 OUT_READS=$(echo ${BED_FILE}.reads)
 
-srun --output=${OUT_READS} /usr/bin/time -v -p -o "${OUT_READS}.time" sh {EXTRACT_READS_SCRIPT} {READ_BAM_FILE} ${BED_FILE} {READSIZE}
+srun --output=${OUT_READS} \
+/usr/bin/time -v -p -o "${OUT_READS}.time" \
+bash {EXTRACT_READS_SCRIPT} \
+{READ_BAM_FILE} \
+${BED_FILE} \
+{READSIZE}
 sleep 1
 
