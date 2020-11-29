@@ -281,6 +281,7 @@ function main(){
     if [[ ${#chain_existed} -gt 0 ]]; then
         echo "Line "${LINENO}": In function "${FUNCNAME}": Use user offered chain "${chain_existed}
     else
+        echo "Line "${LINENO}": In function "${FUNCNAME}": User does not offer chain file. Generating one."
         generate_chain
     fi
 
