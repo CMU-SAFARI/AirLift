@@ -271,7 +271,7 @@ print("num_gaps after gap_extend_merge: ", num_gaps)
 # splitting up the reference genome into the gaps 
 ########################################################
 
-fasta_fn = open(sys.argv[2]) 
+fasta_fn = open(sys.argv[2], "r") 
 output_fn = open(sys.argv[4], "w") 
 
 gap_offset = 0 

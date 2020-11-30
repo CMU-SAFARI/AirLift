@@ -15,7 +15,7 @@ THREAD=${10}
 
 
 function generate_chain(){
-    bash "${SRCFOLDER}/1-generate_chain/chain_install.sh" "${OUTPUT}/"
+    bash "${SRCFOLDER}/1-generate_chain/chain_install.sh" "${OUTPUT}"
     bash "${SRCFOLDER}/1-generate_chain/sample_run.sh" \
     "${OLDREF}" \
     "${NEWREF}" \
