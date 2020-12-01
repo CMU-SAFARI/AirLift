@@ -1,0 +1,6 @@
+# required db variable
+db ficAlb1
+# specific lifting to translate names:
+liftUp /hive/data/genomes/ficAlb1/jkStuff/ensToUcsc.lift
+
+# skipInvalid yes

@@ -1,0 +1,8 @@
+# required db variable
+db cavPor3
+# do we need to translate geneScaffold coordinates
+# geneScaffolds yes
+# other name translations taken care of in the lift file
+nameTranslation "s/^MT/chrM/;"
+# Ensembl uses genbank identifiers:
+liftUp /hive/data/genomes/cavPor3/jkStuff/ensToUcsc.lift
