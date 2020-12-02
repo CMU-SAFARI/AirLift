@@ -37,7 +37,7 @@ for line in open(in_fn):
             for i in range(read_size, len(seq), skip_len): 
                 outfile.write(">" + seq_name.strip() + "_" + str(seq_num) + "\n") # sequence name 
                 outfile.write(seq[seq_num:i] + "\n") # actual sequence 
-                print(seq[seq_num:i] + "\n") 
+#                print(seq[seq_num:i] + "\n") 
                 seq_num = seq_num + skip_len 
         seq_name = line.split(">")[1] 
         seq_num = 0 
@@ -50,7 +50,7 @@ if len(seq) > 0: # if we have a sequence, add the seqs to our fasta file.
     for i in range(read_size, len(seq), skip_len): 
         outfile.write(">" + seq_name.strip() + "_" + str(seq_num) + "\n") # sequence name 
         outfile.write(seq[seq_num:i] + "\n") # actual sequence 
-        print(seq[seq_num:i] + "\n") 
+#        print(seq[seq_num:i] + "\n") 
         seq_num = seq_num + skip_len 
 seq_name = line.split(">")[1] 
 seq_num = 0 
