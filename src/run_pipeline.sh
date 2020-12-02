@@ -51,13 +51,14 @@ for i in `echo ${OUTPUT}/*.chain`; do chr=`basename $i | sed s/.chain//`;
 done
 
 for i in `echo ${OUTPUT}/*.chain`; do chr=`basename $i | sed s/.chain//`;
+	mkdir -p "${OUTPUT}/bedfiles/${chr}/retired_bed/"; 
 	/usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_regions.bed.time" python "${SRCDIR}/4-extract_reads/get_retired_regions.py" ${READSIZE} "${OUTPUT}/bedfiles/${chr}/merged_${chr}.bed" $i "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_regions.bed";
 	/usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_reads.bed.time" bash "${SRCDIR}/4-extract_reads/extract_reads_noprune.sh" ${BINDIR} ${READ_BAM} "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_regions.bed" > "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_reads.bed";
 done
 
 #constant regions:
 for i in `echo ${OUTPUT}/*.chain`; do chr=`basename $i | sed s/.chain//`;
-	mkdir -p "${OUTPUT}/bedfiles/${chr}/retired_bed/"; mkdir -p "${OUTPUT}/bedfiles/${chr}/constant/";
+	mkdir -p "${OUTPUT}/bedfiles/${chr}/constant/";
 	/usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/constant/constant_regions.bed.time" python "${SRCDIR}/4-extract_reads/get_constant_regions.py" ${READSIZE} $i "${OUTPUT}/bedfiles/${chr}/constant/constant_regions.bed";
 done
 
