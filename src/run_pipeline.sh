@@ -2,9 +2,9 @@
 
 SRCDIR=$1
 BINDIR=$2
-OLDREF=$3 #ref "folders" containing ref file
-NEWREF=$4
-SEQ_FILE_EXT=$5
+OLDREF=$3 #ref "directory" containing the old (i.e., outdated) ref genome
+NEWREF=$4 #ref "directory" containing the new (i.e., updated) reference genome
+SEQ_FILE_EXT=$5 #extension of the reference FASTA files (e.g., .fa or .fasta)
 READSIZE=$6
 READ_BAM=$7 #make sure the bam files are sorted and indexed (i.e., samtools index)
 FIRST_PAIR=$8
@@ -92,7 +92,6 @@ for i in `echo ${OUTPUT}/*.chain`; do chr=`basename $i | sed s/.chain//`;
 	/usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.time" CrossMap.py bam $i "${OUTPUT}/bedfiles/${chr}/constant/crossmap_before.bam" "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bed" - -a | "${BINDIR}/samtools" sort -@ ${THREAD_SORT} -l5 -m ${MAXMEM} > "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bam"
 	"${BINDIR}/samtools" index -@ ${THREAD} "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bam"
 	rm "${OUTPUT}/bedfiles/${chr}/constant/crossmap_before.bam" "${OUTPUT}/bedfiles/${chr}/constant/crossmap_before.bam.bai"
-	#cat <("${BINDIR}/bwa" mem -R "@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:illumina\tLB:${SAMPLE}" "${NEWREF}/${chr}.${SEQ_FILE_EXT}" ${FIRST_PAIR} ${SECOND_PAIR} | "${BINDIR}/samtools" view -H -) <(/usr/bin/time -v -p -o "${OUTPUT}/bedfiles/${chr}/constant/constant_liftOver.time" "${BINDIR}/liftOver" -minMatch=1 <("${BINDIR}/samtools" view -h -L "${OUTPUT}/bedfiles/${chr}/constant/constant_regions.bed" ${READ_BAM} | "${BINDIR}/bamToBed" -i -) ${i} >("${SRCDIR}/5-merge/liftBedToSam" <("${BINDIR}/samtools" view -L "${OUTPUT}/bedfiles/${chr}/constant/constant_regions.bed" ${READ_BAM}) - 4 3,4 1,2) "${OUTPUT}/bedfiles/${chr}/constant/constant_unmapped.bed") | "${BINDIR}/samtools" sort -l5 -m ${MAXMEM} > "${OUTPUT}/bedfiles/${chr}/constant/constant_lifted.bam"	
 	mkdir -p "${OUTPUT}/bedfiles/${chr}/realigned_reads/";
 	#cat <(grep ^[^#] "${OUTPUT}/bedfiles/${chr}/constant/constant_unmapped.bed")
 	cat "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bed" "${OUTPUT}/bedfiles/${chr}/"*.reads "${OUTPUT}/bedfiles/${chr}/retired_bed/retired_reads.bed" > "${OUTPUT}/bedfiles/${chr}/realigned_reads/realigned_reads.bed";
@@ -110,8 +109,6 @@ for i in `echo ${OUTPUT}/*.chain`; do chr=`basename $i | sed s/.chain//`;
 	cat <("${BINDIR}/samtools" view -H "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bam") <("${BINDIR}/samtools" merge -@ ${THREAD_SORT} - "${OUTPUT}/bedfiles/${chr}/realigned_reads/paired_reads.bam" "${OUTPUT}/bedfiles/${chr}/realigned_reads/singletons.bam" | "${BINDIR}/samtools" view) | "${BINDIR}/samtools" sort -l5 -m ${MAXMEM} -@ ${THREAD_SORT} > "${OUTPUT}/bedfiles/${chr}/realigned_reads/realigned.bam"
 	rm "${OUTPUT}/bedfiles/${chr}/realigned_reads/paired_reads.bam" "${OUTPUT}/bedfiles/${chr}/realigned_reads/singletons.bam"
 
-	#/usr/bin/time -v -p -o "${OUTPUT}/${chr}_airlift.bam.time" "${BINDIR}/samtools" merge --write-index -@ ${THREAD} --reference "${NEWREF}/${chr}.${SEQ_FILE_EXT}" -l5 -f "${OUTPUT}/${chr}_airlift.bam" "${OUTPUT}/bedfiles/${chr}/realigned_reads/paired_reads.bam" "${OUTPUT}/bedfiles/${chr}/realigned_reads/singletons.bam" "${OUTPUT}/bedfiles/${chr}/constant/constant_lifted.bam";
 	/usr/bin/time -v -p -o "${OUTPUT}/${chr}_airlift.bam.time" "${BINDIR}/samtools" merge --write-index -@ ${THREAD} -l5 -f "${OUTPUT}/${chr}_airlift.bam" "${OUTPUT}/bedfiles/${chr}/constant/crossmap_final.bam" "${OUTPUT}/bedfiles/${chr}/realigned_reads/realigned.bam";
 
 done
-

@@ -44,3 +44,74 @@ We provide an example script that runs the downstream analysis in: AirLift/src/e
 ## Additional Dependencies: 
 
 * `[MarkDuplicates-Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360036459932-MarkDuplicates-Picard-)` 
+
+## Replicating the results -- Yeast
+
+We provide a step-by-step guideline to replicate the results reported in the 
+AirLift paper for Yeast. We also provide the scripts we used for C.elegans and 
+Human genomes in Zotero.
+
+Note that installation requires 1) an internet connection to access several
+public servers (e.g., GitHub, UCSC, EBI websites), 2) python3 (and pip3), 3) 
+Picard tools, 4) GATK, and 5) hap.py (https://github.com/Illumina/hap.py) 
+installed on your machine.
+
+```bash
+#We will work on a directory called "test".
+mkdir test; cd test;
+#We clone AirLift from its GitHub page
+git clone https://github.com/CMU-SAFARI/AirLift.git
+#We install the required dependencies
+cd AirLift/dependencies; bash install.sh; cd ../../;
+#Download the Illumina paired-end read sets from the EBI website
+mkdir illumina; cd illumina;
+wget -O - ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR193/003/ERR1938683/ERR1938683_1.fastq.gz | gunzip -c > ERR1938683_1.fastq
+wget -O - ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR193/003/ERR1938683/ERR1938683_2.fastq.gz | gunzip -c > ERR1938683_2.fastq
+#Download the Yeast reference genome, sacCer2 and sacCer3, from the UCSC website, and create their BWA index files. We also create the Picard's dictionary files, which will be necessary for the GATK analysis.
+mkdir ../sacCer2; cd ../sacCer2
+wget -O - 'ftp://hgdownload.cse.ucsc.edu/goldenPath/sacCer2/chromosomes/chr*' | gunzip -c > ref.fa
+bwa index ref.fa
+samtools faidx ref.fa
+java -jar picard.jar CreateSequenceDictionary -R ref.fa
+mkdir ../sacCer3; cd ../sacCer3;
+wget -O - 'ftp://hgdownload.cse.ucsc.edu/goldenPath/sacCer3/chromosomes/chr*' | gunzip -c > ref.fa
+bwa index ref.fa
+samtools faidx ref.fa
+java -jar picard.jar CreateSequenceDictionary -R ref.fa
+#We align the Illumina reads to the reference genomes we just downloaded
+mkdir ../illumina/bwa; cd ../illumina/bwa;
+/usr/bin/time -v -p -o sacCer2_ERR1938683.time bwa mem -R "@RG\tID:ERR1938683\tSM:ERR1938683\tPL:illumina\tLB:ERR1938683" -t 22 ../../sacCer2/ref.fa ../ERR1938683_1.fastq ../ERR1938683_2.fastq | samtools view -h -F4 | samtools sort -l5 -m 8G -@ 10 > sacCer2_ERR1938683.bam; samtools index sacCer2_ERR1938683.bam;
+/usr/bin/time -v -p -o sacCer3_ERR1938683.time bwa mem -R "@RG\tID:ERR1938683\tSM:ERR1938683\tPL:illumina\tLB:ERR1938683" -t 22 ../../sacCer3/ref.fa ../ERR1938683_1.fastq ../ERR1938683_2.fastq | samtools view -h -F4 | samtools sort -l5 -m 8G -@ 10 > sacCer3_ERR1938683.bam; samtools index sacCer3_ERR1938683.bam;
+#We prepare the sacCer3_ERR1938683.bam file for the GATK analysis that we will
+#perform later (i.e., marking the PCR duplicates)
+picard MarkDuplicates --REMOVE_DUPLICATES -AS true -I sacCer3_ERR1938683.bam -O sacCer3_ERR1938683_rmdup.bam -M sacCer3_ERR1938683.txt
+samtools index sacCer3_ERR1938683_rmdup.bam
+#We create the directory to store the AirLift results and download the chain file from the UCSC website under that directory
+mkdir -p ../../results/airlift; cd ../../results/airlift;
+wget -O - https://hgdownload.soe.ucsc.edu/goldenPath/sacCer2/liftOver/sacCer2ToSacCer3.over.chain.gz | gunzip -c > ref.chain
+#We run AirLift using 32 threads, and 8GB of memory per thread used when 
+#sorting (i.e., floor of 32/3 = 10 threads for sorting)
+/usr/bin/time -v -p -o ./airlift.time bash ../../AirLift/src/run_pipeline.sh ../../AirLift/src/ ../../AirLift/dependencies/bin ../../sacCer2/ ../../sacCer3/ fa 150 ../../illumina/bwa/sacCer2_ERR1938683.bam ../../illumina/ERR1938683_1.fastq ../../illumina/ERR1938683_2.fastq ERR1938683 ./ 32 8G
+#We prepare the AirLift-generated BAM file (i.e., ref_airlift.bam) for GATK
+picard CleanSam -I ref_airlift.bam -O ref_airlift_clean.bam
+picard MarkDuplicates --REMOVE_DUPLICATES -AS true -I ref_airlift_clean.bam -O ref_airlift_rmdup.bam -M ref_airlift.txt
+rm ref_airlift_clean.bam
+samtools index ref_airlift_rmdup.bam
+#We run GATK HaplotypeCaller for the AirLift-generated BAM file using
+#32 threads
+mkdir -p ../gatk/airlift; cd ../gatk/airlift
+gatk --java-options '-Xmx64G' HaplotypeCaller -R ../../../sacCer3/ref.fa -I ../../airlift/ref_airlift_rmdup.bam -O ./ref_airlift_rmdup.bam.vcf.gz --native-pair-hmm-threads 32 -RF ValidAlignmentStartReadFilter -RF ValidAlignmentEndReadFilter -OVI -ERC GVCF
+bcftools view ./ref_airlift_rmdup.bam.vcf.gz | awk '$0~"^#" { print $0; next } { print $0 | "LC_ALL=C sort -k1,1 -k2,2n" }' | bcftools view -O z -o ./ref_airlift_rmdup.sorted.vcf.gz
+gatk IndexFeatureFile -I ./ref_airlift_rmdup.sorted.vcf.gz
+gatk GenotypeGVCFs -OVI -R ../../../sacCer3/ref.fa -V ./ref_airlift_rmdup.sorted.vcf.gz -O ./ref_airlift_rmdup.genotype.vcf.gz
+#We generate the GATK results for the full mapping of reads to sacCer3
+mkdir ../sacCer3; cd ../sacCer3;
+gatk --java-options '-Xmx64G' HaplotypeCaller -R ../../../sacCer3/ref.fa -I ../../../illumina/bwa/sacCer3_ERR1938683_rmdup.bam -O ./sacCer3_ERR1938683_rmdup.bam.vcf.gz --native-pair-hmm-threads 32 -RF ValidAlignmentStartReadFilter -RF ValidAlignmentEndReadFilter -OVI -ERC GVCF
+bcftools view ./sacCer3_ERR1938683_rmdup.bam.vcf.gz | awk '$0~"^#" { print $0; next } { print $0 | "LC_ALL=C sort -k1,1 -k2,2n" }' | bcftools view -O z -o ./sacCer3_ERR1938683_rmdup.sorted.vcf.gz
+gatk IndexFeatureFile -I ./sacCer3_ERR1938683_rmdup.sorted.vcf.gz
+gatk GenotypeGVCFs -OVI -R ../../../sacCer3/ref.fa -V ./sacCer3_ERR1938683_rmdup.sorted.vcf.gz -O ./sacCer3_ERR1938683_rmdup.genotype.vcf.gz
+#We compare the GATK results from the AirLift-generated BAM file to the 
+#baseline (i.e., full mapping) GATK results using hap.py
+cd ../airlift
+hap.py ../sacCer3/sacCer3_ERR1938683_rmdup.genotype.vcf.gz ./ref_airlift_rmdup.genotype.vcf.gz -r ../../../sacCer3/ref.fa -o ./ref_airlift_rmdup.genotype.vcf.gz_full_mapping --threads 32
+```

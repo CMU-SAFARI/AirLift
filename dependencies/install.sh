@@ -11,3 +11,5 @@ cp -r utils/* bin/
 pip3 install --no-cache-dir --prefix $PWD --force-reinstall --ignore-installed git+https://github.com/canfirtina/CrossMap.git
 export PATH="${PWD}/bin":$PATH
 export PYTHONPATH=$(echo $PWD/lib/python*/site-packages):$PYTHONPATH
+echo Installation automatically ran the following command to add the bin directory to your PATH. You may need the copy and paste this command to your "~/.bash_profile" to make sure the environment variables are set automatically everytime you login. Command: $'\n' export PATH="${PWD}/bin":'$PATH'
+echo Installation automatically ran the following command to add the bin directory to your PYTHONPATH. You may need the copy and paste this command to your "~/.bash_profile" to make sure the environment variables are set automatically everytime you login. Command: $'\n' export PYTHONPATH='$(echo '$PWD'/lib/python*/site-packages):$PYTHONPATH'
