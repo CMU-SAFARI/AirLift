@@ -45,13 +45,14 @@ We provide an example script that runs the downstream analysis in: AirLift/src/e
 
 * `[MarkDuplicates-Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360036459932-MarkDuplicates-Picard-)` 
 
-## Replicating the results -- Yeast
 
-We provide a step-by-step guideline to replicate the results reported in the 
-AirLift paper for Yeast. We also provide the scripts we used for C.elegans and 
-Human genomes in Zenodo.
+# Replicating the Results in the Paper
 
-Note that installation requires 1) an internet connection to access several
+We provide a step-by-step guide to replicate the results reported in the paper
+for Yeast. We also provide the scripts we used for C.elegans and Human genomes
+in Zenodo.
+
+Note that AirLift requires 1) an internet connection to access several
 public servers (e.g., GitHub, UCSC, EBI websites), 2) python3 (and pip3), 3) 
 Picard tools, 4) GATK, and 5) hap.py (https://github.com/Illumina/hap.py) 
 installed on your machine.
