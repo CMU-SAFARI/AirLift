@@ -49,7 +49,7 @@ We provide an example script that runs the downstream analysis in: AirLift/src/e
 
 We provide a step-by-step guideline to replicate the results reported in the 
 AirLift paper for Yeast. We also provide the scripts we used for C.elegans and 
-Human genomes in Zotero.
+Human genomes in Zenodo.
 
 Note that installation requires 1) an internet connection to access several
 public servers (e.g., GitHub, UCSC, EBI websites), 2) python3 (and pip3), 3) 
