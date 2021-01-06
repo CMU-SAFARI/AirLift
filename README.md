@@ -84,7 +84,7 @@ mkdir ../illumina/bwa; cd ../illumina/bwa;
 /usr/bin/time -v -p -o sacCer3_ERR1938683.time bwa mem -R "@RG\tID:ERR1938683\tSM:ERR1938683\tPL:illumina\tLB:ERR1938683" -t 22 ../../sacCer3/ref.fa ../ERR1938683_1.fastq ../ERR1938683_2.fastq | samtools view -h -F4 | samtools sort -l5 -m 8G -@ 10 > sacCer3_ERR1938683.bam; samtools index sacCer3_ERR1938683.bam;
 #We prepare the sacCer3_ERR1938683.bam file for the GATK analysis that we will
 #perform later (i.e., marking the PCR duplicates)
-picard MarkDuplicates --REMOVE_DUPLICATES -AS true -I sacCer3_ERR1938683.bam -O sacCer3_ERR1938683_rmdup.bam -M sacCer3_ERR1938683.txt
+java -jar picard.jar MarkDuplicates --REMOVE_DUPLICATES -AS true -I sacCer3_ERR1938683.bam -O sacCer3_ERR1938683_rmdup.bam -M sacCer3_ERR1938683.txt
 samtools index sacCer3_ERR1938683_rmdup.bam
 #We create the directory to store the AirLift results and download the chain file from the UCSC website under that directory
 mkdir -p ../../results/airlift; cd ../../results/airlift;
@@ -93,8 +93,8 @@ wget -O - https://hgdownload.soe.ucsc.edu/goldenPath/sacCer2/liftOver/sacCer2ToS
 #sorting (i.e., floor of 32/3 = 10 threads for sorting)
 /usr/bin/time -v -p -o ./airlift.time bash ../../AirLift/src/run_pipeline.sh ../../AirLift/src/ ../../AirLift/dependencies/bin ../../sacCer2/ ../../sacCer3/ fa 150 ../../illumina/bwa/sacCer2_ERR1938683.bam ../../illumina/ERR1938683_1.fastq ../../illumina/ERR1938683_2.fastq ERR1938683 ./ 32 8G
 #We prepare the AirLift-generated BAM file (i.e., ref_airlift.bam) for GATK
-picard CleanSam -I ref_airlift.bam -O ref_airlift_clean.bam
-picard MarkDuplicates --REMOVE_DUPLICATES -AS true -I ref_airlift_clean.bam -O ref_airlift_rmdup.bam -M ref_airlift.txt
+java -jar picard.jar CleanSam -I ref_airlift.bam -O ref_airlift_clean.bam
+java -jar picard.jar MarkDuplicates --REMOVE_DUPLICATES -AS true -I ref_airlift_clean.bam -O ref_airlift_rmdup.bam -M ref_airlift.txt
 rm ref_airlift_clean.bam
 samtools index ref_airlift_rmdup.bam
 #We run GATK HaplotypeCaller for the AirLift-generated BAM file using
