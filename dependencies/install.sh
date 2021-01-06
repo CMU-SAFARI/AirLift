@@ -9,5 +9,5 @@ tar -xf bedtools-2.29.2.tar.gz; cd bedtools2/; make; cp bin/* ../bin/; make clea
 tar -xf BBMap_38.87.tar.gz; cp -r bbmap/* bin/; rm -rf bbmap/;
 cp -r utils/* bin/
 pip3 install --no-cache-dir --prefix $PWD --force-reinstall --ignore-installed git+https://github.com/canfirtina/CrossMap.git
-echo "${PWD}/bin"
-
+export PATH="${PWD}/bin":$PATH
+export PYTHONPATH=$(echo $PWD/lib/python*/site-packages):$PYTHONPATH
