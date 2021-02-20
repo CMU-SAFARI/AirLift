@@ -1,6 +1,6 @@
 # AirLift
 
-This repository contains the source code for our tool AirLift, which we describe and evaluate in our BMC Genome Biology submission and the ArXiv version (http://arxiv.org/abs/1912.08735). 
+This repository contains the source code for our tool AirLift, which we describe and evaluate in our BMC Genome Biology submission, the ArXiv version (http://arxiv.org/abs/1912.08735) and the bioRxiv version (https://www.biorxiv.org/content/10.1101/2021.02.16.431517v1). 
 
 >J.S. Kim, C. Firtina, M.B. Cavlak, D. Senol Cali, N. Hajinazar, M. Alser, C. Alkan, O. Mutlu. "AirLift: A Fast and Comprehensive Technique for Translating Alignments between Reference Genomes."
 
