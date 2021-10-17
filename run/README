@@ -1,3 +1,5 @@
 # to build an exact chain file: 
 
 python 1_build_exact_chain_file.py build [old_ref.fa] [new_ref.fa] [inexact chain file] > [exact chain file]
+python 2_get_updated_regions_bed.py [chain_file] [read size] [max errors in alignment] [output bedfile]
+
