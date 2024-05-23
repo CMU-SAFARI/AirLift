@@ -9,5 +9,5 @@ THREAD_SORT=$6
 SAMPLE=$7
 MAXMEM=$8
 
-/usr/bin/time -v -p -o ${OUT_PREFIX}.time "${BINDIR}/bwa" mem -R "@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:illumina\tLB:${SAMPLE}" -t $THREADS $REF ${FASTQ} | "${BINDIR}/samtools" view -h -F4 | "${BINDIR}/samtools" sort -l5 -@ ${THREAD_SORT} -m ${MAXMEM} > ${OUT_PREFIX}.bam
+/usr/bin/time -v -p -o ${OUT_PREFIX}.time "bwa" mem -R "@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:illumina\tLB:${SAMPLE}" -t $THREADS $REF ${FASTQ} | "samtools" view -h -F4 | "samtools" sort -l5 -@ ${THREAD_SORT} -m ${MAXMEM} > ${OUT_PREFIX}.bam
 

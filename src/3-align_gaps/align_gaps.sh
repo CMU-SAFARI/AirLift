@@ -11,6 +11,6 @@ GAPS=$3
 THREAD=$4 #number of threads allocated for this job
 OUTPUT_PREFIX=$5
 
-/usr/bin/time -v -p -o "${OUTPUT_PREFIX}_aln.time" "${BINDIR}/bwa" aln -n 0.08 -t "${THREAD}" "${INDEX}" "${GAPS}" > "${OUTPUT_PREFIX}.sai"
-/usr/bin/time -v -p -o "${OUTPUT_PREFIX}_samse.time" "${BINDIR}/bwa" samse "${INDEX}" "${OUTPUT_PREFIX}.sai" "${GAPS}" | "${BINDIR}/samtools" view -h -F4 | "${BINDIR}/samtools" sort -l5 -m32G > "${OUTPUT_PREFIX}.bam"
+/usr/bin/time -v -p -o "${OUTPUT_PREFIX}_aln.time" "bwa" aln -n 0.08 -t "${THREAD}" "${INDEX}" "${GAPS}" > "${OUTPUT_PREFIX}.sai"
+/usr/bin/time -v -p -o "${OUTPUT_PREFIX}_samse.time" "bwa" samse "${INDEX}" "${OUTPUT_PREFIX}.sai" "${GAPS}" | "samtools" view -h -F4 | "samtools" sort -l5 -m32G > "${OUTPUT_PREFIX}.bam"
 
